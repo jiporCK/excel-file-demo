@@ -1,11 +1,10 @@
-cmake_minimum_required(VERSION 3.14)
-project(ExcelTableApp)
+cmake_minimum_required(VERSION 3.14)    # Require CMake 3.14 or newer
+project(ExcelTableApp)                  # Project name
+set(CMAKE_CXX_STANDARD 17)              # Use C++17 standard
 
-set(CMAKE_CXX_STANDARD 17)
+include(FetchContent)                   # Enable FetchContent for dependencies
 
-include(FetchContent)
-
-# Fetch xlnt
+# Get xlnt library (Excel handling)
 FetchContent_Declare(
   xlnt
   GIT_REPOSITORY https://github.com/tfussell/xlnt.git
@@ -13,7 +12,7 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(xlnt)
 
-# Fetch tabulate
+# Get tabulate library (table formatting)
 FetchContent_Declare(
   tabulate
   GIT_REPOSITORY https://github.com/p-ranav/tabulate.git
@@ -21,13 +20,16 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(tabulate)
 
-# Add your main.cpp or other source files
+# Build executable from source files
 add_executable(ExcelTableApp main.cpp src/Student.cpp src/ExcelUtils.cpp src/MenuUtils.cpp)
-# Tell the compiler where to find all the headers 
-target_include_directories(ExcelTableApp PRIVATE include )
-# Link libraries
+
+# Include header directory
+target_include_directories(ExcelTableApp PRIVATE include)
+
+# Link libraries to the app
 target_link_libraries(ExcelTableApp PRIVATE xlnt tabulate)
 
+# Copy xlnt.dll after build (Windows)
 add_custom_command(TARGET ExcelTableApp POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E copy_if_different
     "${CMAKE_SOURCE_DIR}/build/_deps/xlnt-build/source/Release/xlnt.dll"
